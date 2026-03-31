@@ -3,7 +3,7 @@
 BitBucket Server REST API CLI Tool
 
 A command-line interface for interacting with BitBucket Server's REST API,
-focusing on Pull Request management workflows.
+supporting project/repository discovery and Pull Request management workflows.
 
 Environment Variables Required:
     BITBUCKET_URL   - Base URL of BitBucket Server (e.g., https://bitbucket.example.com)
@@ -90,6 +90,32 @@ class BitBucketClient:
             start = result.get("nextPageStart", start + len(values))
 
         return all_values
+
+    # Project & Repository Methods
+    def list_projects(self):
+        """List all projects accessible to the authenticated user."""
+        return self._get_paginated("/projects")
+
+    def list_repositories(self, project):
+        """List all repositories in a project."""
+        endpoint = f"/projects/{project}/repos"
+        return self._get_paginated(endpoint)
+
+    def get_repository(self, project, repo):
+        """Get detailed information about a specific repository, including default branch."""
+        endpoint = f"/projects/{project}/repos/{repo}"
+        result = self._request("GET", endpoint)
+        try:
+            branch_endpoint = f"/projects/{project}/repos/{repo}/default-branch"
+            default_branch = self._request("GET", branch_endpoint)
+            result["defaultBranch"] = default_branch
+        except requests.HTTPError:
+            result["defaultBranch"] = None
+        return result
+
+    def search_repositories(self, name):
+        """Search for repositories by name across all accessible projects."""
+        return self._get_paginated("/repos", params={"name": name})
 
     # Pull Request Methods
     def list_pull_requests(self, project, repo, state="OPEN"):
@@ -337,6 +363,22 @@ def main():
         add_pr_args(p)
         p.add_argument("--pr-id", "-i", required=True, type=int, help="Pull request ID")
 
+    # list-projects
+    subparsers.add_parser("list-projects", help="List all accessible projects")
+
+    # list-repos
+    p_list_repos = subparsers.add_parser("list-repos", help="List repositories in a project")
+    p_list_repos.add_argument("--project", "-p", required=True, help="Project key")
+
+    # get-repo
+    p_get_repo = subparsers.add_parser("get-repo", help="Get repository details")
+    p_get_repo.add_argument("--project", "-p", required=True, help="Project key")
+    p_get_repo.add_argument("--repo", "-r", required=True, help="Repository slug")
+
+    # search-repos
+    p_search_repos = subparsers.add_parser("search-repos", help="Search repositories by name")
+    p_search_repos.add_argument("--name", "-n", required=True, help="Repository name to search for")
+
     # list-prs
     p_list = subparsers.add_parser("list-prs", help="List pull requests")
     add_pr_args(p_list)
@@ -428,7 +470,23 @@ def main():
     try:
         client = BitBucketClient()
 
-        if args.command == "list-prs":
+        if args.command == "list-projects":
+            result = client.list_projects()
+            output_json(result)
+
+        elif args.command == "list-repos":
+            result = client.list_repositories(args.project)
+            output_json(result)
+
+        elif args.command == "get-repo":
+            result = client.get_repository(args.project, args.repo)
+            output_json(result)
+
+        elif args.command == "search-repos":
+            result = client.search_repositories(args.name)
+            output_json(result)
+
+        elif args.command == "list-prs":
             state = None if args.state == "ALL" else args.state
             result = client.list_pull_requests(args.project, args.repo, state)
             output_json(result)

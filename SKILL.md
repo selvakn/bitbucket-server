@@ -1,11 +1,11 @@
 ---
 name: bitbucket-server
-description: This skill enables interaction with BitBucket Server REST API for Pull Request management. Use when the user wants to create, review, comment on, merge, list pull requests, read comments, or manage tasks on BitBucket Server.
+description: This skill enables interaction with BitBucket Server REST API for project/repository discovery and Pull Request management. Use when the user wants to list projects, discover repositories, create, review, comment on, merge, list pull requests, read comments, or manage tasks on BitBucket Server.
 ---
 
 # BitBucket Server
 
-This skill provides tools for interacting with BitBucket Server's REST API, focusing on Pull Request management workflows.
+This skill provides tools for interacting with BitBucket Server's REST API, supporting project/repository discovery and Pull Request management workflows.
 
 ## Prerequisites
 
@@ -22,6 +22,15 @@ The `scripts/bitbucket_api.py` script provides a CLI for BitBucket Server operat
 ```bash
 python3 scripts/bitbucket_api.py <command> [options]
 ```
+
+### Discovery Commands
+
+| Command | Description |
+|---------|-------------|
+| `list-projects` | List all accessible projects on the BitBucket Server instance |
+| `list-repos` | List all repositories within a specified project |
+| `get-repo` | Get detailed information about a specific repository (including default branch) |
+| `search-repos` | Search for repositories by name across all accessible projects |
 
 ### Pull Request Commands
 
@@ -54,6 +63,22 @@ python3 scripts/bitbucket_api.py <command> [options]
 | `reopen-tasks` | Reopen multiple tasks at once |
 
 ## Command Usage Examples
+
+### Discover Projects and Repositories
+
+```bash
+# List all accessible projects
+python3 scripts/bitbucket_api.py list-projects
+
+# List all repositories in a project
+python3 scripts/bitbucket_api.py list-repos --project MYPROJ
+
+# Get detailed info about a specific repository (includes default branch and clone URLs)
+python3 scripts/bitbucket_api.py get-repo --project MYPROJ --repo my-repo
+
+# Search for repositories by name across all projects
+python3 scripts/bitbucket_api.py search-repos --name payment
+```
 
 ### List Pull Requests
 
@@ -147,6 +172,17 @@ python3 scripts/bitbucket_api.py decline --project MYPROJ --repo my-repo --pr-id
 ```
 
 ## Workflow Guidelines
+
+### Discovering Repositories
+
+Use discovery commands to navigate a multi-team BitBucket Server ecosystem:
+
+1. List projects to see what teams/organizational units exist
+2. List repositories within a project of interest
+3. Get repository details (clone URLs, default branch) to understand how to interact with it
+4. Or search by name if you already know part of the repository name
+
+This is especially useful when you need to raise PRs to repositories owned by other teams.
 
 ### Reviewing a Pull Request
 

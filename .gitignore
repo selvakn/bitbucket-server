@@ -40,6 +40,9 @@ env/
 .DS_Store
 Thumbs.db
 
+# Environment/Secrets
+.env
+
 # Test/Coverage
 .coverage
 htmlcov/

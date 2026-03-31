@@ -10,6 +10,127 @@ All requests use HTTP Basic Authentication with username and personal access tok
 Authorization: Basic <base64(username:token)>
 ```
 
+## Project & Repository Endpoints
+
+### List Projects
+
+```
+GET /projects
+```
+
+**Parameters:**
+- `name` (optional): Filter by project name
+- `start` (optional): Pagination start
+- `limit` (optional): Pagination limit
+
+**Permissions:** `PROJECT_VIEW` on each returned project
+
+**Response:**
+```json
+{
+  "values": [
+    {
+      "key": "PROJ",
+      "name": "My Project",
+      "description": "Project description",
+      "public": false,
+      "type": "NORMAL",
+      "links": { "self": [{ "href": "https://..." }] }
+    }
+  ],
+  "isLastPage": true,
+  "start": 0,
+  "limit": 25
+}
+```
+
+### List Repositories in Project
+
+```
+GET /projects/{projectKey}/repos
+```
+
+**Parameters:**
+- `start` (optional): Pagination start
+- `limit` (optional): Pagination limit
+
+**Permissions:** `PROJECT_READ` on the specified project
+
+**Response:**
+```json
+{
+  "values": [
+    {
+      "slug": "my-repo",
+      "name": "My Repo",
+      "description": "Repo description",
+      "state": "AVAILABLE",
+      "public": false,
+      "forkable": true,
+      "scmId": "git",
+      "project": { "key": "PROJ", "name": "My Project" },
+      "links": {
+        "clone": [
+          { "href": "https://bitbucket.example.com/scm/PROJ/my-repo.git", "name": "http" },
+          { "href": "ssh://git@bitbucket.example.com:7999/proj/my-repo.git", "name": "ssh" }
+        ],
+        "self": [{ "href": "https://..." }]
+      }
+    }
+  ],
+  "isLastPage": true,
+  "start": 0,
+  "limit": 25
+}
+```
+
+### Get Repository
+
+```
+GET /projects/{projectKey}/repos/{repositorySlug}
+```
+
+**Permissions:** `REPO_READ` on the specified repository
+
+**Response:** Single `RestRepository` object (same shape as list values above).
+
+### Get Repository Default Branch
+
+```
+GET /projects/{projectKey}/repos/{repositorySlug}/default-branch
+```
+
+**Response:**
+```json
+{
+  "id": "refs/heads/main",
+  "displayId": "main",
+  "type": "BRANCH",
+  "isDefault": true
+}
+```
+
+### Search Repositories (Global)
+
+```
+GET /repos
+```
+
+Searches across all accessible projects.
+
+**Parameters:**
+- `name` (optional): Filter by repository name (partial match)
+- `projectname` (optional): Filter by project name
+- `projectkey` (optional): Filter by project key
+- `visibility` (optional): Filter by visibility
+- `state` (optional): Filter by repository state
+- `start` (optional): Pagination start
+- `limit` (optional): Pagination limit
+
+**Permissions:** Implicit read permission (returns repos the user can access)
+
+**Response:** Paginated list of `RestRepository` objects (same shape as List Repositories response).
+
 ## Pull Request Endpoints
 
 ### List Pull Requests
