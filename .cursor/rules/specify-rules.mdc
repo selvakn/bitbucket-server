@@ -15,7 +15,7 @@ Auto-generated from all feature plans. Last updated: 2026-03-31
 ## Project Structure
 
 ```text
-src/
+skill/          # Agent skill (SKILL.md, scripts/, references/) - symlink target
 tests/
 ```
 

@@ -4,7 +4,7 @@ import sys
 import pytest
 from dotenv import load_dotenv
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "skill", "scripts"))
 
 from bitbucket_api import BitBucketClient
 

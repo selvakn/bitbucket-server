@@ -12,14 +12,17 @@ A [Claude Code](https://claude.ai/code) skill that enables interaction with BitB
 
 ## Installation
 
-Copy the `bitbucket-server` folder to your Claude Code skills directory:
+Symlink or copy the `skill` folder to your Claude Code skills directory:
 
 ```bash
-# User-level installation
-cp -r bitbucket-server ~/.claude/skills/
+# User-level installation (symlink)
+ln -s "$(pwd)/skill" ~/.claude/skills/bitbucket-server
 
-# Or project-level installation
-cp -r bitbucket-server .claude/skills/
+# Or project-level installation (symlink)
+ln -s "$(pwd)/skill" .claude/skills/bitbucket-server
+
+# Or copy instead
+cp -r skill ~/.claude/skills/bitbucket-server
 ```
 
 ## Configuration
@@ -53,62 +56,62 @@ Once installed, Claude Code will automatically use this skill when you ask about
 
 ## Available Commands
 
-The skill provides a CLI tool at `scripts/bitbucket_api.py`:
+The skill provides a CLI tool at `skill/scripts/bitbucket_api.py`:
 
 ### Discovery
 
 ```bash
 # List all accessible projects
-python3 scripts/bitbucket_api.py list-projects
+python3 skill/scripts/bitbucket_api.py list-projects
 
 # List repositories in a project
-python3 scripts/bitbucket_api.py list-repos --project PROJ
+python3 skill/scripts/bitbucket_api.py list-repos --project PROJ
 
 # Get repository details (includes default branch and clone URLs)
-python3 scripts/bitbucket_api.py get-repo --project PROJ --repo my-repo
+python3 skill/scripts/bitbucket_api.py get-repo --project PROJ --repo my-repo
 
 # Search repositories by name across all projects
-python3 scripts/bitbucket_api.py search-repos --name payment
+python3 skill/scripts/bitbucket_api.py search-repos --name payment
 ```
 
 ### Pull Requests
 
 ```bash
 # List PRs
-python3 scripts/bitbucket_api.py list-prs --project PROJ --repo my-repo --state OPEN
+python3 skill/scripts/bitbucket_api.py list-prs --project PROJ --repo my-repo --state OPEN
 
 # Get PR details
-python3 scripts/bitbucket_api.py get-pr --project PROJ --repo my-repo --pr-id 42
+python3 skill/scripts/bitbucket_api.py get-pr --project PROJ --repo my-repo --pr-id 42
 
 # Create PR
-python3 scripts/bitbucket_api.py create-pr --project PROJ --repo my-repo \
+python3 skill/scripts/bitbucket_api.py create-pr --project PROJ --repo my-repo \
   --title "My PR" --from-branch feature/x --to-branch main
 
 # Get diff
-python3 scripts/bitbucket_api.py get-diff --project PROJ --repo my-repo --pr-id 42
+python3 skill/scripts/bitbucket_api.py get-diff --project PROJ --repo my-repo --pr-id 42
 
 # Approve/Merge/Decline
-python3 scripts/bitbucket_api.py approve --project PROJ --repo my-repo --pr-id 42
-python3 scripts/bitbucket_api.py merge --project PROJ --repo my-repo --pr-id 42
-python3 scripts/bitbucket_api.py decline --project PROJ --repo my-repo --pr-id 42
+python3 skill/scripts/bitbucket_api.py approve --project PROJ --repo my-repo --pr-id 42
+python3 skill/scripts/bitbucket_api.py merge --project PROJ --repo my-repo --pr-id 42
+python3 skill/scripts/bitbucket_api.py decline --project PROJ --repo my-repo --pr-id 42
 ```
 
 ### Comments
 
 ```bash
 # Get comments
-python3 scripts/bitbucket_api.py get-comments --project PROJ --repo my-repo --pr-id 42
+python3 skill/scripts/bitbucket_api.py get-comments --project PROJ --repo my-repo --pr-id 42
 
 # Add general comment
-python3 scripts/bitbucket_api.py add-comment --project PROJ --repo my-repo --pr-id 42 \
+python3 skill/scripts/bitbucket_api.py add-comment --project PROJ --repo my-repo --pr-id 42 \
   --text "Looks good!"
 
 # Add inline comment
-python3 scripts/bitbucket_api.py add-comment --project PROJ --repo my-repo --pr-id 42 \
+python3 skill/scripts/bitbucket_api.py add-comment --project PROJ --repo my-repo --pr-id 42 \
   --text "Consider renaming" --file-path src/main.py --line 42 --line-type ADDED
 
 # Reply to comment
-python3 scripts/bitbucket_api.py reply-comment --project PROJ --repo my-repo --pr-id 42 \
+python3 skill/scripts/bitbucket_api.py reply-comment --project PROJ --repo my-repo --pr-id 42 \
   --comment-id 123 --text "Fixed!"
 ```
 
@@ -118,20 +121,20 @@ Tasks in BitBucket Server are comments with BLOCKER severity.
 
 ```bash
 # List tasks
-python3 scripts/bitbucket_api.py get-tasks --project PROJ --repo my-repo --pr-id 42
+python3 skill/scripts/bitbucket_api.py get-tasks --project PROJ --repo my-repo --pr-id 42
 
 # Complete single task
-python3 scripts/bitbucket_api.py complete-task --project PROJ --repo my-repo --pr-id 42 \
+python3 skill/scripts/bitbucket_api.py complete-task --project PROJ --repo my-repo --pr-id 42 \
   --comment-id 456
 
 # Complete multiple tasks
-python3 scripts/bitbucket_api.py complete-tasks --project PROJ --repo my-repo --pr-id 42 \
+python3 skill/scripts/bitbucket_api.py complete-tasks --project PROJ --repo my-repo --pr-id 42 \
   --comment-ids 456,789,123
 
 # Reopen tasks
-python3 scripts/bitbucket_api.py reopen-task --project PROJ --repo my-repo --pr-id 42 \
+python3 skill/scripts/bitbucket_api.py reopen-task --project PROJ --repo my-repo --pr-id 42 \
   --comment-id 456
-python3 scripts/bitbucket_api.py reopen-tasks --project PROJ --repo my-repo --pr-id 42 \
+python3 skill/scripts/bitbucket_api.py reopen-tasks --project PROJ --repo my-repo --pr-id 42 \
   --comment-ids 456,789
 ```
 
@@ -176,7 +179,7 @@ uv run pytest tests/test_pull_requests.py
 
 ## API Reference
 
-See [references/api_endpoints.md](references/api_endpoints.md) for detailed BitBucket Server REST API documentation.
+See [skill/references/api_endpoints.md](skill/references/api_endpoints.md) for detailed BitBucket Server REST API documentation.
 
 ## License
 
